@@ -33,7 +33,12 @@ Existen tres tipos de valores para los niveles:
 -  2: El mecanismo se encuentra en movimiento, no está en ningún nivel.
 - -1: Error
 
-Estos valores deben ser guardados en una varaible llamada `nivel_actual` que se inicializa a 0.
+Estos valores deben ser guardados en una variable llamada `nivel_actual` que se inicializa a 0.
+
+> [!IMPORTANT]
+> Las variables del código base suministrado tienen un **tipo de datos** orientativo
+>
+> **Debes** tomar decisiones del tipo de datos que consideres más adecuado para cada variable, pero **no puedes cambiar el nombre de las variables**.
 
 ## Diagrama de estados
 
