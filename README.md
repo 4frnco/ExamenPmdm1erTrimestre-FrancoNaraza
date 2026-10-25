@@ -2,7 +2,17 @@
 
 ## Descripción
 
-En el examen tendrás que hacer una máquina de estados que controle el mecanismo del ["Halo de Vigo"](https://hoxe.vigo.org/movemonos/movilidad_vigo_vertical.php?idpoi=4849&lang=gal)
+En el examen tendrás que hacer una máquina de estados que controle el mecanismo del ["Halo de Vigo"](https://hoxe.vigo.org/movemonos/movilidad_vigo_vertical.php?idpoi=4849&lang=gal).
+
+Puedes hacer un fork de este repositorio, clonarlo o simplemente descargarlo.
+
+## Entrega
+
+Debes entregar el enlace a tu repositorio en los primeros minutos en la hora del examen.
+
+Tienes que hacer un fichero SOLUCION.md en el que expliques cómo has implementado la máquina de estados y cómo funciona.
+
+Tienes que hacer commits con frecuencia, al menos uno por criterio de cualificación (ver más adelante)
 
 > [!IMPORTANT]
 > Respetar TODOS los nombres de estados, transiciones y variables que se especifican en este fichero.
@@ -60,3 +70,34 @@ stateDiagram-v2
 
 ```
 
+## Criterios de Cualificación
+
+### Tipo de variables (20 puntos)
+
+- Elige adecuadamente el tipo de variables conforme las explicaciones de clase
+- Utiliza variedad de tipos con configuraciones completas y adecuadas a la situación
+
+### Estados (20 puntos)
+
+- Implementa los estados teniendo en cuenta las indicaciones de clase
+
+- Utiliza varias funciones dentro de los estados para realizar las acciones necesarias
+
+### Transiciones (20 puntos)
+
+- Decide las transiciones entre estados
+- Las utiliza para decidir como la máquina cambia de estados utilizando sintaxis dadas en clase
+
+### Test (20 puntos)
+
+- Realiza un número extenso de test unitarios para comprobar el funcionamiento de la máquina de estados.
+
+### Documentación (20 puntos)
+
+- Realiza un SOLUCION.md explicando cómo ha implementado la máquina de estados y cómo funciona.
+
+- Utiliza varios formatos de markdown y diagramas para explicar el funcionamiento de la máquina de estados.
+
+### Commits (si no se realiza se descuenta -20 puntos)
+
+- Realiza commits con frecuencia, al menos uno por criterio de cualificación.
