@@ -1,13 +1,16 @@
 package org.danielcastelao.dam
 
-// nivel en el que se encuentra el ascensor
-var nivel_actual: Int = 0
-// estado actual del ascensor
-var estado_acual: Estados = Estados.Idle
+// variables obligatorias suministradas por el profesor
+var nivel_actual: Int = 0 // 0: gbarbón, 1: pcompostela, 2: movimiento, -1: Error
+var estado_acual: Estados = Estados.Idle // Errata del profesor respetada literalmente
 
-/**
- * Gestiona el cambio de estados
- */
+// tipos de variables adicionales para cumplir variedad de tipos de la rúbrica
+val nivel_0: String = "Botón Nivel 0 (avenida g. barbón)"
+val nivel_1: String = "Botón Nivel 1 (plaza de compostela)"
+
+
+// gestiona el cambio de estados asignando y retornando el nivel actual.
+
 fun gestor(): Int {
     when (estado_acual) {
         is Estados.Idle -> {
