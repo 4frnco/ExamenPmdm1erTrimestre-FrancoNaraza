@@ -42,5 +42,14 @@ sealed class Estados {
         fun empezarTrayecto(): Paso {
             return Paso(MovingUP, Niveles.MOVER.numero)
         }
+
+        // sigue subiendo hasta llegar
+        fun revisarSubida(finDeViaje: Boolean): Paso {
+            if (finDeViaje) {
+                return Paso(Idle, Niveles.ARRIBA.numero)
+            }
+
+            return Paso(MovingUP, Niveles.MOVER.numero)
+        }
     }
 }

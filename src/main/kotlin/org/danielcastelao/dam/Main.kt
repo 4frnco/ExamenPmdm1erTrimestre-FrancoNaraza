@@ -6,6 +6,9 @@ fun main() {
     boton = Botones.nivel_1
     mostrarSituacion("Pulsamos el botón de arriba")
     mostrarSituacion("El ascensor sigue subiendo")
+
+    llegada = true
+    mostrarSituacion("Llegamos a la plaza de Compostela")
 }
 
 private fun mostrarSituacion(mensaje: String) {
