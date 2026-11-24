@@ -1,104 +1,160 @@
 package org.danielcastelao.dam
 
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class GestorTest {
 
+    // limpia las variables entre pruebas
+    @BeforeTest
     @AfterTest
-    fun restaurarEstado() {
+    fun reiniciarAscensor() {
         estado_acual = Estados.Idle
         nivel_actual = 0
+        boton = Botones.ninguno
+        fallo = false
+        llegada = false
     }
 
-    // --- TESTS DEL PROFESOR (INTACTOS) ---
+    @Test
+    fun `al arrancar espera abajo`() {
+        comprobarPaso(Estados.Idle, 0)
+    }
 
     @Test
-    fun `gestor reinicia el nivel cuando el estado es Idle`() {
-        estado_acual = Estados.Idle
+    fun `corrige un nivel imposible cuando esta parado`() {
         nivel_actual = 5
 
-        assertEquals(0, gestor())
-        assertEquals(0, nivel_actual)
+        comprobarPaso(Estados.Idle, 0)
     }
 
     @Test
-    fun `gestor establece el nivel cuando el estado es MovingUP`() {
+    fun `conserva el nivel de arriba mientras espera`() {
+        nivel_actual = 1
+
+        comprobarPaso(Estados.Idle, 1)
+    }
+
+    @Test
+    fun `puede subir y bajar en el mismo recorrido de prueba`() {
+        boton = Botones.nivel_1
+        comprobarPaso(Estados.MovingUP, 2)
+        comprobarPaso(Estados.MovingUP, 2)
+
+        llegada = true
+        comprobarPaso(Estados.Idle, 1)
+
+        boton = Botones.nivel_0
+        comprobarPaso(Estados.MovingDOWN, 2)
+        comprobarPaso(Estados.MovingDOWN, 2)
+
+        llegada = true
+        comprobarPaso(Estados.Idle, 0)
+    }
+
+    @Test
+    fun `pulsar el mismo nivel deja el ascensor donde estaba`() {
+        boton = Botones.nivel_0
+        comprobarPaso(Estados.Idle, 0)
+
+        nivel_actual = 1
+        boton = Botones.nivel_1
+        comprobarPaso(Estados.Idle, 1)
+    }
+
+    @Test
+    fun `la subida deja el nivel en movimiento aunque tuviera otro valor`() {
         estado_acual = Estados.MovingUP
         nivel_actual = 5
 
-        assertEquals(2, gestor())
-        assertEquals(2, nivel_actual)
+        comprobarPaso(Estados.MovingUP, 2)
     }
 
     @Test
-    fun `gestor establece el nivel cuando el estado es MovingDOWN`() {
+    fun `la bajada deja el nivel en movimiento aunque tuviera otro valor`() {
         estado_acual = Estados.MovingDOWN
         nivel_actual = 5
 
-        assertEquals(2, gestor())
-        assertEquals(2, nivel_actual)
+        comprobarPaso(Estados.MovingDOWN, 2)
     }
 
     @Test
-    fun `gestor establece el nivel de error cuando el estado es Error`() {
+    fun `una averia pone el nivel a menos uno`() {
         estado_acual = Estados.Error
         nivel_actual = 5
 
-        assertEquals(-1, gestor())
-        assertEquals(-1, nivel_actual)
-    }
-
-    // - tests complementarios -
-
-    @Test
-    fun `transicion exitosa de subida de Nivel 0 a Nivel 1`() {
-        nivel_actual = 0
-        estado_acual = Estados.Idle
-
-        presionarBoton(1)
-
-        assertEquals(1, nivel_actual)
-        assertEquals(Estados.Idle, estado_acual)
+        comprobarPaso(Estados.Error, -1)
     }
 
     @Test
-    fun `transicion exitosa de bajada de nivel 1 a nivel 0`() {
+    fun `una pulsacion durante la subida se pierde al llegar`() {
+        boton = Botones.nivel_1
+        comprobarPaso(Estados.MovingUP, 2)
+
+        boton = Botones.nivel_0
+        comprobarPaso(Estados.MovingUP, 2)
+
+        llegada = true
+        comprobarPaso(Estados.Idle, 1)
+        comprobarPaso(Estados.Idle, 1)
+    }
+
+    @Test
+    fun `un aviso de llegada antiguo no termina el siguiente viaje`() {
+        llegada = true
+        comprobarPaso(Estados.Idle, 0)
+
+        boton = Botones.nivel_1
+        comprobarPaso(Estados.MovingUP, 2)
+        comprobarPaso(Estados.MovingUP, 2)
+    }
+
+    @Test
+    fun `un fallo en reposo impide arrancar`() {
+        boton = Botones.nivel_1
+        fallo = true
+
+        comprobarPaso(Estados.Error, -1)
+    }
+
+    @Test
+    fun `un fallo puede cortar la subida`() {
+        boton = Botones.nivel_1
+        comprobarPaso(Estados.MovingUP, 2)
+
+        fallo = true
+        comprobarPaso(Estados.Error, -1)
+    }
+
+    @Test
+    fun `si coinciden la llegada y el fallo gana el fallo`() {
         nivel_actual = 1
-        estado_acual = Estados.Idle
+        boton = Botones.nivel_0
+        comprobarPaso(Estados.MovingDOWN, 2)
 
-        presionarBoton(0)
-
-        assertEquals(0, nivel_actual)
-        assertEquals(Estados.Idle, estado_acual)
+        llegada = true
+        fallo = true
+        comprobarPaso(Estados.Error, -1)
     }
 
     @Test
-    fun `boton con nivel invalido cambia estado a error`() {
-        presionarBoton(99)
+    fun `quitar el aviso de fallo no permite otro viaje`() {
+        fallo = true
+        comprobarPaso(Estados.Error, -1)
 
-        assertEquals(Estados.Error, estado_acual)
-        assertEquals(-1, nivel_actual)
+        fallo = false
+        boton = Botones.nivel_1
+        comprobarPaso(Estados.Error, -1)
     }
 
-    @Test
-    fun `funciones internas de los estados ejecutan correctamente`() {
-        val proximoEstado = Estados.Idle.evaluarPeticion(1, 0)
-        assertEquals(Estados.MovingUP, proximoEstado)
+    // revisa el resultado y las variables
+    private fun comprobarPaso(estadoEsperado: Estados, nivelEsperado: Int) {
+        val nivelDevuelto = gestor()
 
-        assertEquals(2, Estados.MovingUP.iniciarSubida())
-        assertEquals(1, Estados.MovingUP.finalizarSubida())
-        assertEquals(-1, Estados.Error.obtenerNivelFallo())
-    }
-
-    @Test
-    fun `reparar restaura el sistema a Idle y nivel 0`() {
-        provocarFallo()
-        reparar()
-
-        assertEquals(Estados.Idle, estado_acual)
-        assertEquals(0, nivel_actual)
+        assertEquals(nivelEsperado, nivelDevuelto)
+        assertEquals(nivelEsperado, nivel_actual)
+        assertEquals(estadoEsperado, estado_acual)
     }
 }
