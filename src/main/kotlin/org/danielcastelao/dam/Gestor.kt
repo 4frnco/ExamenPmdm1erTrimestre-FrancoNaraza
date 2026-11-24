@@ -16,6 +16,7 @@ fun gestor(): Int {
     val paso = when (val estado = estado_acual) {
         is Estados.Idle -> estado.atenderBoton(pulsado, nivel_actual)
         is Estados.MovingUP -> estado.revisarSubida(finDeViaje)
+        is Estados.MovingDOWN -> estado.revisarBajada(finDeViaje)
     }
 
     estado_acual = paso.estado

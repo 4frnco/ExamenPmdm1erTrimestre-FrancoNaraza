@@ -18,13 +18,17 @@ data class Paso(val estado: Estados, val nivel: Int)
 sealed class Estados {
 
     object Idle : Estados() {
-        // solo sube si está abajo
+        // arranca si se pide el otro nivel
         fun atenderBoton(pulsado: Botones, nivel: Int): Paso {
-            if (pulsado == Botones.nivel_1 && nivel == Niveles.ABAJO.numero) {
-                return MovingUP.empezarTrayecto()
-            }
+            return when {
+                pulsado == Botones.nivel_1 && nivel == Niveles.ABAJO.numero ->
+                    MovingUP.empezarTrayecto()
 
-            return seguirEnReposo(nivel)
+                pulsado == Botones.nivel_0 && nivel == Niveles.ARRIBA.numero ->
+                    MovingDOWN.empezarTrayecto()
+
+                else -> seguirEnReposo(nivel)
+            }
         }
 
         private fun seguirEnReposo(nivel: Int): Paso {
@@ -43,13 +47,26 @@ sealed class Estados {
             return Paso(MovingUP, Niveles.MOVER.numero)
         }
 
-        // sigue subiendo hasta llegar
         fun revisarSubida(finDeViaje: Boolean): Paso {
             if (finDeViaje) {
                 return Paso(Idle, Niveles.ARRIBA.numero)
             }
 
             return Paso(MovingUP, Niveles.MOVER.numero)
+        }
+    }
+
+    object MovingDOWN : Estados() {
+        fun empezarTrayecto(): Paso {
+            return Paso(MovingDOWN, Niveles.MOVER.numero)
+        }
+
+        fun revisarBajada(finDeViaje: Boolean): Paso {
+            if (finDeViaje) {
+                return Paso(Idle, Niveles.ABAJO.numero)
+            }
+
+            return Paso(MovingDOWN, Niveles.MOVER.numero)
         }
     }
 }

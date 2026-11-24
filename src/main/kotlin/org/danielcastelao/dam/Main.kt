@@ -9,6 +9,12 @@ fun main() {
 
     llegada = true
     mostrarSituacion("Llegamos a la plaza de Compostela")
+
+    boton = Botones.nivel_0
+    mostrarSituacion("Pulsamos el botón de abajo")
+
+    llegada = true
+    mostrarSituacion("Llegamos a García Barbón")
 }
 
 private fun mostrarSituacion(mensaje: String) {
