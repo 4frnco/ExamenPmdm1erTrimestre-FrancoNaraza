@@ -3,7 +3,8 @@ package org.danielcastelao.dam
 enum class Niveles(val numero: Int) {
     ABAJO(0),
     ARRIBA(1),
-    MOVER(2)
+    MOVER(2),
+    AVERIA(-1)
 }
 
 enum class Botones {
@@ -31,6 +32,7 @@ sealed class Estados {
             }
         }
 
+        // corrige un nivel inválido a cero
         private fun seguirEnReposo(nivel: Int): Paso {
             val planta = if (nivel == Niveles.ARRIBA.numero) {
                 Niveles.ARRIBA
@@ -67,6 +69,12 @@ sealed class Estados {
             }
 
             return Paso(MovingDOWN, Niveles.MOVER.numero)
+        }
+    }
+
+    object Error : Estados() {
+        fun dejarFueraDeServicio(): Paso {
+            return Paso(Error, Niveles.AVERIA.numero)
         }
     }
 }

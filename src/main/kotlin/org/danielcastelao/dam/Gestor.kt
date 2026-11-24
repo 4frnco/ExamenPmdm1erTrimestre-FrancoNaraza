@@ -3,6 +3,7 @@ package org.danielcastelao.dam
 var nivel_actual: Int = Niveles.ABAJO.numero
 var estado_acual: Estados = Estados.Idle
 var boton: Botones = Botones.ninguno
+var fallo: Boolean = false
 var llegada: Boolean = false
 
 fun gestor(): Int {
@@ -13,10 +14,16 @@ fun gestor(): Int {
     boton = Botones.ninguno
     llegada = false
 
-    val paso = when (val estado = estado_acual) {
-        is Estados.Idle -> estado.atenderBoton(pulsado, nivel_actual)
-        is Estados.MovingUP -> estado.revisarSubida(finDeViaje)
-        is Estados.MovingDOWN -> estado.revisarBajada(finDeViaje)
+    // el fallo tiene prioridad
+    val paso = when {
+        fallo -> Estados.Error.dejarFueraDeServicio()
+
+        else -> when (val estado = estado_acual) {
+            is Estados.Idle -> estado.atenderBoton(pulsado, nivel_actual)
+            is Estados.MovingUP -> estado.revisarSubida(finDeViaje)
+            is Estados.MovingDOWN -> estado.revisarBajada(finDeViaje)
+            is Estados.Error -> estado.dejarFueraDeServicio()
+        }
     }
 
     estado_acual = paso.estado
